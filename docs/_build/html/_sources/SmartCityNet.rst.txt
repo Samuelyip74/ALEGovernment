@@ -113,7 +113,7 @@ Topology
 ^^^^^^^^
 
 .. figure:: /images/hld.png
-    :width: 600px
+    :width: 800px
     :align: center
     :height: 300px
     :alt: alternate text
@@ -125,7 +125,7 @@ Products
 ^^^^^^^^
 
 .. figure:: /images/solutions.png
-    :width: 600px
+    :width: 800px
     :align: center
     :height: 400px
     :alt: alternate text
@@ -150,13 +150,13 @@ Configure the SPBM Backbone (ISIS-SPB)
 
 .. code-block:: console
 
-      -> spb isis control-bvlan 4002
+    -> spb isis control-bvlan 4002
 
 * Configuring an IP Interface on the Control BVLAN. To configure an IP interface on the Control BVLAN to support in-band management access in the SPBM domain, use the ip interface command.
 
 .. code-block:: console
 
-      -> ip interface "spb-mgmt-int" address 10.1.1.1/24 vlan 4002
+    -> ip interface "spb-mgmt-int" address 10.1.1.1/24 vlan 4002
 
 Only one Control BVLAN can be configured on a switch, and only IPv4 interface is supported. ISIS-SPB is the only protocol supported in the IP BVLAN domain for exchanging or advertising IP routing information. No other routing protocol (including VRRP) is supported.
 
@@ -200,7 +200,7 @@ The service spb command is used to create an SPB service. For example, the follo
 
 .. code-block:: console
 
-      -> service 1 spb isid 500 bvlan 4001 admin-state enable
+    -> service 1 spb isid 500 bvlan 4001 admin-state enable
 
 The BVLAN ID specified with the service spb command must already exist in the switch configuration. However, the I-SID number specified creates a new I-SID that is bound to the BVLAN for this service.
 
@@ -221,7 +221,7 @@ When VLAN translation is disabled, frames simply egress without any modification
 The following table shows the required translation (tag is added or replaced) that takes place when the egress SAP configuration is applied to the possible frame types (untagged, tagged, double-tagged). Note that in this table the terms “ITAG” and “OTAG” refer to inner tag and outer tag, respectively.
 
 .. figure:: /images/saptags.png
-    :width: 600px
+    :width: 800px
     :align: center
     :height: 300px
     :alt: alternate text
@@ -244,7 +244,7 @@ To enable VLAN translation at the access port level, use the service access vlan
 
 .. code-block:: console
 
-      -> service access port 1/11 vlan-xlation enable
+    -> service access port 1/11 vlan-xlation enable
 
 Enable the Service
 ^^^^^^^^^^^^^^^^^^
@@ -253,8 +253,8 @@ By default, the SPB service is disabled when the service is created. Once the se
 
 .. code-block:: console
 
-      -> service 1 admin-state enable
-      -> show service spb
+    -> service 1 admin-state enable
+    -> show service spb
 
 Configure the SAP points
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -270,8 +270,8 @@ To configure a port or link aggregate as an access port, use the service access 
 
 .. code-block:: console
 
-      -> service access port 1/2
-      -> service access linkagg 5
+    -> service access port 1/2
+    -> service access linkagg 5
 
 VLAN Translation on Access Ports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -295,7 +295,7 @@ A Layer 2 profile determines how control frames ingressing on an access port are
     :align: center
     :height: 200px
     :alt: alternate text
-    :figclass: align-left
+    :figclass: align-center
 
 If the default profile values are not sufficient, use the service l2profile command with the tunnel, drop, and peer options to create a new profile. For example, the following command creates a profile named “DropL2”:
 
@@ -334,7 +334,7 @@ The service sap command is used to configure a SAP. This command specifies the S
     :align: center
     :height: 200px
     :alt: alternate text
-    :figclass: align-left
+    :figclass: align-center
 
 .. note::  
 
@@ -368,6 +368,130 @@ The following SAP ID classification precedence is applied when there are multipl
 #. Single-tagged (VLAN)
 #. Single-tagged (wildcard)
 #. Untagged - Lowest.
+
+Configuring IP over SPB (Layer 3 VPN)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Configuring IP over SPB requires the following general steps:
+
+* Define an L3 VPN interface to serve as a gateway address to remote networks. There are two options for configuring an L3 VPN interface based on the switch platform:
+
+ - An external loopback port configuration.
+ - An IP service-based interface for in-line routing (OmniSwitch 9900 only).
+
+* Determine whether to use the VPN-Lite or L3 VPN (SPB-ISIS) approach for routing L3 traffic over an L2 SPBM backbone network.
+
+This document, we will cover only the SPB-ISIS approach.
+
+* To implement the L3 VPN (SPB-ISIS) approach, configure a binding between a VRF instance, an SPB I-SID, and an IP gateway (the L3 VPN interface address). This binding will enable bidirectional exchange of routes between the VRF and SPB I-SID via the Global Route Manager (GRM).
+
+ - Optionally configure a route map to filter routes that are imported or exported between the VRF and I-SID defined in an L3 VPN binding.
+ - Optionally configure additional methods for route leaking, such as route redistribution to allow routing between a VRF instance and an I-SID or between two I-SIDs.
+
+The following steps are used to configure an L3 VPN interface:
+
+1 Identify the BEBs that will participate in routing L3 traffic through the SPBM core. On each of these BEBs, configure the required L3 VPN interface configuration. There are two options for configuring this type of interface based on the switch platform: an external loopback port configuration or an IP service- based interface (OmniSwitch 9900 only).
+
+a. Configure an L3 VPN loopback interface. The following commands create an external loopback port configuration that will serve as an L3 VPN interface:
+
+.. code-block:: console
+
+    -> vlan 200
+    -> vlan 200 members 1/1/1 tagged
+    -> spb bvlan 500
+    -> service access port 1/1/2
+    -> service 1000 spb isid 1000 bvlan 500 admin-state enable
+    -> service 1000 sap port 1/1/2:200
+    -> vrf create vrf-1
+    vrf-1::-> ip interface IPv4-L3vpn1 vlan 200 address 10.1.1.1/24
+    vrf-1::-> ipv6 interface IPv6-L3vpn1 vlan 200 address 1000::1
+    vrf-1::-> ipv6 interface IPv6-L3vpn2 vlan 200 address 2000::1
+
+.. note::  
+
+    Once the above loopback port configuration is defined, use a physical cable to connect port 1/1/1 to access port 1/1/2. 
+    The SPB BVLAN and I-SID are required to create the SAP for access port 1/1/2. 
+
+b. Configure an IPv4 L3 VPN service-based interface (OmniSwitch 9900). The following commands provide an example for creating an L3 VPN service-based interface:
+
+.. code-block:: console
+
+    -> vrf create vrf-1
+    vrf-1::-> ip interface IPv4-L3vpn3 service 10 address 20.1.1.1/24
+    vrf-1::-> ipv6 interface IPv6-L3vpn4 service 10 address 4000::1
+
+In this example, the “IPv4-L3vpn3” and “IPv6-L3vpn4” interfaces are created in the “vrf-1” instance and bound to SPB service 10. See “IPv4 L3 VPN In-Line Routing: Two I-SIDS, Two VRFs” on page 7-62 for an example configuration of an L3 VPN service-based interface.
+
+**Configuring the L3 VPN (SPB-ISIS) Solution**
+
+The L3 VPN (SPB-ISIS) approach requires configuring a VRF-ISID binding to identify the L3 VPN interface that will exchange routes between the VLAN domain (VRF instance) and the SPB service domain (I-SID). VRF import and export commands are used to exchange routes between the VRF and the I-SID specified in the binding configuration. For example:
+
+.. code-block:: console
+
+    vrf-1::-> ip export all-routes
+    vrf-1::-> vrf default
+    -> spb ipvpn bind vrf-1 isid 1000 gateway 10.1.1.1 all-routes
+    -> vrf vrf-1
+    vrf-1::-> ip import isid 1000 all-routes
+
+In this example, “vrf-1” is bound to SPB I-SID 1000 and gateway 10.1.1.1 identifies the IPv4 L3 VPN interface. All IPv4 routes in “vrf-1” are exported to the Global Route Manager (GRM), which then exports the routes to I-SID 1000. The last command in this sequence sets up the import of I-SID 1000 routes from the GRM into the “vrf-1” instance. The all-routes parameter specifies that no route-map filtering is applied to exported or imported routes; all routes are allowed.
+ 
+ .. code-block:: console
+
+    vrf-1::-> ipv6 export all-routes
+    vrf-1::-> vrf default
+    -> spb ipvpn6 bind vrf-1 isid 3000 gateway 1000::1
+    -> vrf vrf-1
+    vrf-1::-> ipv6 import isid 3000 all-routes
+
+In this example, “vrf-1” is bound to SPB I-SID 3000 and gateway 1000::1 identifies the IPv6 L3 VPN interface. All IPv6 routes in “vrf-1” are exported to the GRM, which then exports the routes to I-SID 3000. The last command in this sequence sets up the import of I-SID 3000 routes from the GRM into the “vrf-1” instance. The all-routes parameter specifies that no route-map filtering is applied to exported or imported routes; all routes are allowed.
+
+**Filtering Imported or Exported Routes**
+
+To filter routes that are imported or exported, define a route map to use with the ip import or ip export commands. For example, the following commands create the “ipvpn-vrf1” route map and filter exported and imported routes:
+
+ .. code-block:: console
+
+        vrf-1::-> ip access-list ipaddr
+        vrf-1::-> ip access-list ipaddr address 15.0.0.0/8 action permit redist-control
+        all-subnets
+        vrf-1::-> ip route-map ipvpn-vrf1 sequence-number 1 action permit
+        vrf-1::-> ip route-map ipvpn-vrf1 sequence-number 1 match ip-address ipaddr
+        vrf-1::-> ip export ipvpn-vrf1
+        vrf-1::-> ip import isid 1000 ipvpn-vrf1
+        vrf-1::-> ipv6 access-list ip6addr
+        vrf-1::-> ipv6 access-list ip6addr address 2001::/64 action permit redist- control all subnets
+        vrf-1::-> ip route-map ipvpn6-vrf1 sequence-number 1 action permit
+        vrf-1::-> ip route-map ipvpn6-vrf1 sequence-number 1 match ipv6-address ip6addr vrf-1::-> ipv6 export ipvpn6-vrf1
+        vrf-1::-> ipv6 import isid 3000 ipvpn6-vrf1
+
+Configuring Route Redistribution Between VRFs and/or I-SIDs
+The L3 VPN (SPB-ISIS) solution also allows for the redistribution of routes between a VRF instance and an I-SID or between two I-SIDs (inter-I-SID route leaking). For example, the following commands redistribute routes from I-SID 2000 into I-SID 1000, from “vrf-1” into I-SID 2000, from I-SID 4000 into I-SID 3000, and from “vrf-1” into I-SID 4000.
+ 
+  .. code-block:: console
+
+      -> spb ipvpn redist source-isid 2000 destination-isid 1000 all-routes
+      -> spb ipvpn redist source-vrf vrf-1 destination-isid 2000 all-routes
+      -> spb ipvpn6 redist source-isid 4000 destination-isid 3000 all-routes
+      -> spb ipvpn6 redist source-vrf vrf-1 destination-isid 4000 all-routes
+
+**Verifying L3 VPN Configuration and Routes**
+
+VRFs are bound to I-SIDs to identify a VRF mapping to a specific SPB service instance for the purposes of exchanging routes between the VRF and I-SID via the switch GRM. To verify the VRF mapping configuration on the local switch, use the show spb ipvpn bind or show spb ipvpn6 bind command. For example:
+
+  .. code-block:: console
+
+        -> show spb ipvpn bind
+        Legend: * indicates bind entry is active
+        SPB IPVPN Bind Table:
+                VRF              ISID            Gateway                 Route-Map
+        --------------------+------------+----------------------+----------------------
+        * vrf-1                  1000         10.1.1.1
+        * vrf-2                  2000         20.1.1.1
+        Total Bind Entries: 2
+        -> show spb ipvpn6 bind
+        Legend: * indicates bind entry is active
+        SPB IPVPN Bind Table:
 
 Security
 ########
