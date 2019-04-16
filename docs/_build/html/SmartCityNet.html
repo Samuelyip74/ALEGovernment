@@ -109,6 +109,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#vlan-translation-on-access-ports">VLAN Translation on Access Ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuring-layer-2-profiles-for-access-ports">Configuring Layer 2 Profiles for Access Ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#assigning-layer-2-profiles-to-access-ports">Assigning Layer 2 Profiles to Access Ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-the-service-access-point">Creating the Service Access Point</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#security">Security</a><ul>
@@ -325,15 +326,15 @@ At the core of the city net is P(MPLS) or BCB(SPB) routers, offering L2/L3 VPNs 
 The L2/L3 VPN services are extended to the edge via various access technologies such as Metro-E, GPoN, and SPB.</p>
 <div class="section" id="topology">
 <h3>Topology<a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h3>
-<div class="align-center figure">
-<a class="reference internal image-reference" href="_images/hld.png"><img alt="alternate text" src="_images/hld.png" style="width: 800px; height: 300px;" /></a>
+<div class="align-left figure align-center">
+<a class="reference internal image-reference" href="_images/hld.png"><img alt="alternate text" src="_images/hld.png" style="width: 600px; height: 300px;" /></a>
 </div>
 <p>Below are the products used for building the Smart City Net.</p>
 </div>
 <div class="section" id="products">
 <h3>Products<a class="headerlink" href="#products" title="Permalink to this headline">¶</a></h3>
-<div class="align-center figure">
-<a class="reference internal image-reference" href="_images/solutions.png"><img alt="alternate text" src="_images/solutions.png" style="width: 800px; height: 400px;" /></a>
+<div class="align-left figure align-center">
+<a class="reference internal image-reference" href="_images/solutions.png"><img alt="alternate text" src="_images/solutions.png" style="width: 600px; height: 400px;" /></a>
 </div>
 </div>
 </div>
@@ -415,8 +416,8 @@ The service spb command is used to create an SPB service. For example, the follo
 </ul>
 <p>When VLAN translation is disabled, frames simply egress without any modification of the VLAN tags. In other words, the frames are transparently bridged without tag modification.
 The following table shows the required translation (tag is added or replaced) that takes place when the egress SAP configuration is applied to the possible frame types (untagged, tagged, double-tagged). Note that in this table the terms “ITAG” and “OTAG” refer to inner tag and outer tag, respectively.</p>
-<div class="align-center figure">
-<a class="reference internal image-reference" href="_images/saptags.png"><img alt="alternate text" src="_images/saptags.png" style="width: 800px; height: 300px;" /></a>
+<div class="align-left figure align-center">
+<a class="reference internal image-reference" href="_images/saptags.png"><img alt="alternate text" src="_images/saptags.png" style="width: 600px; height: 300px;" /></a>
 </div>
 <p>Enabling VLAN translation is required at two different levels: first at the access port level and then at the service level. This activates VLAN translation for all of the SAPs on an access port that belong to the same service.
 To enable translation at the service level, use the service vlan-xlation command. For example:</p>
@@ -468,7 +469,7 @@ To enable VLAN translation on an access port, use the service access vlan-xlatio
 <div class="section" id="configuring-layer-2-profiles-for-access-ports">
 <h3>Configuring Layer 2 Profiles for Access Ports<a class="headerlink" href="#configuring-layer-2-profiles-for-access-ports" title="Permalink to this headline">¶</a></h3>
 <p>A Layer 2 profile determines how control frames ingressing on an access port are processed. When a port is configured as an access port, a default Layer 2 profile (def-access-profile) is applied to the port with the following default values for processing control frames:</p>
-<div class="align-center figure">
+<div class="align-left figure align-center">
 <a class="reference internal image-reference" href="_images/l2profile.png"><img alt="alternate text" src="_images/l2profile.png" style="width: 300px; height: 200px;" /></a>
 </div>
 <p>If the default profile values are not sufficient, use the service l2profile command with the tunnel, drop, and peer options to create a new profile. For example, the following command creates a profile named “DropL2”:</p>
@@ -491,6 +492,46 @@ The service access l2profile command is used to assign a new profile to an acces
 <span class="go">-&gt; service access linkagg 5 l2profile default</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="creating-the-service-access-point">
+<h3>Creating the Service Access Point<a class="headerlink" href="#creating-the-service-access-point" title="Permalink to this headline">¶</a></h3>
+<p>Each SPB service is bound to at least one Service Access Point (SAP). A SAP identifies the point at which customer traffic enters the Provider Backbone Bridge Network (PBBN). Creating a SAP on an SPB switch designates that switch as a Backbone Edge Bridge (BEB) in the PBBN. An SPB switch that does not have a SAP but does have at least one BVLAN and an SPB interface is designated as Backbone Core Bridge (BCB) in the PBBN.
+Once the SPB topology is determined and switches that will serve as BEBs are identified, a SAP is created on each BEB. A SAP is created by associating a SAP ID with an SPB service. A SAP ID is comprised of a customer-facing port (referred to as an access port) and an encapsulation value that is used to identify the type of customer traffic (untagged, single-tagged, or double-tagged) to map to the associated service.
+The service sap command is used to configure a SAP. This command specifies the SPB service ID number and the SAP ID (slot/port:encapsulation). The following parameter values are used with this command to specify the encapsulation value:</p>
+<div class="align-left figure align-center">
+<a class="reference internal image-reference" href="_images/sapencap.png"><img alt="alternate text" src="_images/sapencap.png" style="width: 500px; height: 200px;" /></a>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">:all (wildcard) parameter is also configurable as the inner tag value for double-tagged frames (for example, “10:all” specifies double-tagged packets with an outer tag equal to 10 and an inner tag with any value).</p>
+</div>
+<p>The following service sap command example creates a SAP that will direct customer traffic ingressing on access port 1/4 that is tagged with VLAN ID 50 to service 100:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service 100 sap 1/4:50 description “BEB1 to SPB100 CVLAN 50”</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In the above example, the 1/4:50 designation is referred to as the SAP ID or the encapsulation ID. This means that if no other SAPs are configured for port 1/4, then any traffic ingressing on that port is dropped if the traffic is not tagged with VLAN 50.
+It is possible to configure more than one SAP for the same access port, which provides a method for segregating incoming traffic into multiple services. For example, the following SAP configuration for port 2/3 sends incoming traffic to three different services based on the VLAN tags of the frames received:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service 2000 sap port 2/3:all</span>
+<span class="go">-&gt; service 200 sap port 2/3:100</span>
+<span class="go">-&gt; service 1000 sap port 2/3:100.200</span>
+</pre></div>
+</div>
+<p>In this example,</p>
+<ul class="simple">
+<li>Frames double-tagged with 100 (outer tag) and 200 (inner tag) are sent on service 1000.</li>
+<li>Frames single-tagged with VLAN 100 are sent on service 200.</li>
+<li>All other frames (those that are not single-tagged with 100 or double-tagged with 100 and 200) are sent on service 2000</li>
+</ul>
+<p>The following SAP ID classification precedence is applied when there are multiple SAPs for one access port:</p>
+<ol class="arabic simple">
+<li>Double-tagged (Outer VLAN + Inner VLAN) - Highest</li>
+<li>Double-tagged (Outer VLAN + all)</li>
+<li>Single-tagged (VLAN)</li>
+<li>Single-tagged (wildcard)</li>
+<li>Untagged - Lowest.</li>
+</ol>
 </div>
 </div>
 <div class="section" id="security">
