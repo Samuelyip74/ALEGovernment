@@ -3,7 +3,9 @@ Smart City Net
 ##############
 Smart cities rely on a robust, yet flexible network foundation to interconnect sensors, people and businesses with cloud-based applications. A city net is the cornerstone of a smart city since all use cases are reliant on it.
 
-City net technical requirements
+For solution guide click here :download:`Smart City Solution Guide </pdf/smartcities.pdf>` 
+
+**City net technical requirements**
 
 .. csv-table:: Table 1  City net technical requirements
    :widths: 20, 60
@@ -598,37 +600,228 @@ The authentication is passed when following conditions are satisfied. Else, the 
 * Authentication type of the current key in the keychain and the authentication type mentioned in the packet are same.
 * Message digest calculated by the keychain manager based on the active key and message digest carried in the packet are same.
 
-Interworking with other Networks
-################################
-
-MPLS to SPB interconnect
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-GPON to SPB interconnect
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Metro-E to SPB interconnect
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-WLAN to SPB interconnect
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Operation, Administration, and Management (OAM)
-###############################################
-
-SPB OAM
-^^^^^^^
 
 Ethernet OAM
-^^^^^^^^^^^^
+############
 
-Link OAM
-^^^^^^^^
+Ethernet OAM focuses on two main areas that service providers require the most and are rapidly evolving in the standards bodies:
 
-Service OAM
-^^^^^^^^^^^
+* Service OAM (IEEE 802.1ag and ITU-T Y.1731)—for monitoring and troubleshooting end-to-end Ethernet service instances.
+* Link OAM (IEEE 802.3ah EFM Link OAM)—for monitoring and troubleshooting individual Ethernet links.
 
-Service Assurance
-^^^^^^^^^^^^^^^^^
+These two protocols are both unique and complimentary. For example, Service OAM may isolate a fault down to a specific service, but to determine exactly where the fault occurred within the network infrastructure might also require the use of Link OAM.
 
-For solution guide click here :download:`Smart City Solution Guide </pdf/smartcities.pdf>` 
+Ethernet Service OAM allows service providers to manage customer services end-to-end on a per-service- instance basis. A customer service instance, or Ethernet Virtual Connection (EVC), is the service that is sold to a customer and is designated by a VLAN tag on the User-to-Network Interface (UNI).
+
+* Maintenance End Points (MEPs) and Maintenance Intermediate Points (MIPs)
+
+    - MEPs initiate OAM commands. MEPs prevent leakage between domains.
+    - MIPs passively receive and respond to OAM frames.
+
+* Virtual MEP: creates an UP MEP on a virtual port.
+* Maintenance Association (MA) is a logical connection between two or more MEPs.
+* Point-to-point MA: logical sub-MA component only between two MEPs MA.
+* Maintenance Domain: One or more MAs under the same administrative control.
+* Maintenance Domain Levels: There are eight levels defined in 802.1ag:
+
+    - levels [5, 6, 7] are for customers
+    - levels [3, 4] are for service provider
+    - levels [0, 1, 2] are for operators
+
+* Multiple levels are supported for flexibility.
+
+    - Mechanisms: continuity check (CC), loopback, link trace
+    - Remote Fault Propagation (RFP): Propagates connectivity fault events into the interface attached to a MEP .
+
+
+CFM Maintenance Domain
+^^^^^^^^^^^^^^^^^^^^^^
+
+CFM uses a hierarchical Maintenance Domain (MD) infrastructure to manage and administer Ethernet networks.
+
+* Each domain is made up of Maintenance Endpoints (MEPs) and Maintenance Intermediate Points (MIPs).
+* The MEPs are configured on edge ports within the domain for each EVC. The MIPs are configured on relevant ports within the domain itself (interior ports).
+* The network administrator selects the relevant points within the network to determine where maintenance points are needed. The maintenance point configuration defines the MD.
+* MDs are assigned an unique level number (between 0 and 7) to help identify and differentiate the MD within the domain hierarchy. For example, different organizations, such as operators (levels 0, 1, 2), service providers (levels 3, 4), and customers (levels 5, 6, 7), are involved in a Metro Ethernet Service.
+* Each organization can have its own Maintenance Domain, designated by the assigned level number to specify the scope of management needed for that domain.
+
+The following illustration shows an example of the CFM Maintenance Domain hierarchy:
+
+.. figure:: /images/oamov.png
+    :width: 800px
+    :align: center
+    :height: 500px
+    :alt: alternate text
+    :figclass: align-center
+
+Fault Management
+^^^^^^^^^^^^^^^^
+
+Service OAM Connectivity Fault Management consists of three types of messages that are used to help network administrators detect, verify, and isolate when a problem occurs in the network:
+
+* Continuity Check Messages (CCM)—These are multicast messages exchanged periodically by MEPs to detect loss of service connectivity between MEPs. These messages are also used by MEPs and MIPs to discover other MEPs within a domain.
+* Linktrace Messages (LTM)—These messages are transmitted by a MEP to trace the path to a destination maintenance point. The receiving maintenance point responds to LTMs with a linktrace reply (LTR). This mechanism is similar to the UDP Trace Route function. The transmission of linktrace messages is requested by an administrator.
+* Loopback Messages (LBM)—These messages are transmitted by a MEP to a specified MIP or MEP to determine whether or not the maintenance point is reachable. The receiving maintenance point responds to LBMs with a loopback reply (LBR). This mechanism is not used to discover a path to the destination; it is similar to the Ping function. The transmission of loopback messages is requested by an administrator.
+
+Remote Fault Propagation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Remote Fault propagation (RFP) propagates connectivity fault events into the interface that is attached to a MEP. Once the fault is detected for a MEP, the MEP's interface is shutdown. The feature is configurable on per MEP basis and is supported only for UP MEPs. It detects only loss of connectivity and remote MAC defect.
+When a point-to-point connection is emulated with a Layer 2 SPB service, it is necessary to propagate connectivity faults from one end of the service tunnel to the other end. This allows a locally connected device to detect a connectivity fault in the SPB service and take action (such as enable a redundant link or send a trap) in response to the detected fault. Remote Fault Propagation (RFP) for SPB provides this type of fault detection and propagation from one end of an SPB service to the other.
+The RFP functionality is applied to the SPBM service (data plane) layer. Connectivity fault events are propagated into an SPB Service Access Point (SAP). A SAP is associated with an SPB access port and a service instance identifier (I-SID). When a SAP port goes down, the SAP port on the other end of the service is also brought down. Without the RFP for SPB feature, the other end would continue to transmit packets waiting for a response.
+Ethernet OAM messaging is used to detect a failed condition and propagate the fault. An OAM Continuity Check Message (CCM) is sent at specified intervals between SAPs to advertise the status of SAP components (such as the SPB access port and I-SID information).
+This implementation of RFP for SPB involves setting up the following components:
+
+* An underlying SPB network infrastructure. RFP will monitor SPB access ports, which are bound to SAPs. A SAP consists of an access port, SPB service ID, and an encapsulation value (the VLAN tags that the SAP will process on the access ports).
+* An RFP domain, which consists of local maintenance end points (MEPs) with remote end point lists that are assigned to the same RFP domain ID.
+ 
+    - A local MEP defines the RFP domain parameters, such as the RFP domain ID, level, and CCM interval. An ID number is assigned to the local MEP to identify the local switch as a participant in an RFP OAM domain.
+    - A remote end point list identifies the SPB services to monitor and the remote end points (the MEP IDs of remote switches) to which the status of the services is advertised. Configuring the remote end point list of an RFP domain triggers the sending of CCM packets.
+
+* A reserved Ethernet OAM domain to which the RFP domain is mapped. When the local MEP of an RFP domain is configured, an OAM domain is automatically created based on the parameters specified when the local RFP MEP was created.
+
+The following diagram shows how RFP works in a sample SPBM network topology:
+
+.. figure:: /images/rfpspb.png
+    :width: 800px
+    :align: center
+    :height: 500px
+    :alt: alternate text
+    :figclass: align-center
+
+In this sample SPBM topology:
+
+* An RFP local MEP and a remote end point list are configured on each Backbone Edge Bridge (BEB). Both are assigned to the same RFP domain ID on each BEB to identify the end points as participating members of the RFP domain.
+* Each local MEP is assigned an ID number, which is used as the virtual UP MEP ID. In this example, the virtual UP MEP ID is 1 for BEB-1, 2 for BEB-2, 3 for BEB-3, and 4 for BEB-4.
+* Each remote end point list specifies the SPB services to monitor and the MEP IDs of remote BEBs to which the status of the services is advertised. For example, the remote end point list on BEB-1 contains the monitored SPB services and local MEP IDs for BEB-2, BEB-3, and BEB-4.
+* The remote end point list binds an SPB service ID to the RFP domain. The service ID is associated with a service instance identifier (I-SID) and a SAP, which identifies the SPB service instance and access port to monitor. For example, on the BEB-2 switch, the status of I-SID 1500 on access port 2/1 is monitored and advertised to BEB-1.
+* CCM packets transmitted on the RFP domain advertise I-SID and access port status information for the local SAP. The SAP information to advertise is identified through the SPB service ID that is associated with the RFP domain. For example, BEB-1 and BEB-2 both advertise the status of SAP port 1/1 and SAP port 2/1 for I-SID 1500. The same SPB service ID is mapped to each of these SAPs, which means the same I-SID is mapped to each of these SAPs.
+* When port 2/1 goes down on BEB-2, the service represented by I-SID 1500 stops transmitting. The CCM packets transmitted between BEB-2 and BEB-1 detect and advertise the port down fault. This causes BEB-1 to administratively down port 1/1 in response to the fault condition
+
+**Fault Detection**
+
+Each BEB in the RFP domain will check the I-SID and port state information contained in the received CCM packets.
+
+* If any port state has transitioned from up to down, the local SAP port associated with the same I-SID is also brought down as a port violation.
+* When a CCM indicates that the downed port has transitioned back to an up state, the local port violation is cleared.
+* After a port violation is cleared, a 10 second timer is started to avoid bringing down the local ports immediately. This allows for the scenario in which a port violation is manually cleared on one BEB and by the time the violation is cleared on another BEB, a CCM packet from the other BEB is received with SAP port down information.
+* If a BEB device goes down, the information about the BEB will time out on remote BEB devices after 3 multiplied by the value of the CCM interval (3*CCM interval value). For example, if the CCM interval value is set to 100ms, a remote BEB will wait 300ms before timing out the information about the BEB that went down. The local physical SAP access port mapped to the I-SID that timed out is then brought down as well.
+
+**MIP CCM Database Support**
+
+Per section 19.4 of the IEEE 802.1ag 5.2 draft standard, an MHF may optionally maintain a MIP CCM database as it is not required for conformance to this standard. A MIP CCM database, if present, maintains the information received from the MEPs in the MD and can be used by the Linktrace Protocol.
+This implementation of Ethernet OAM does not support the optional MIP CCM database. As per section 19.4.4 of the IEEE 802.1ag 5.2 draft standard, LTM is forwarded on the basis of the source learning filtering database. Because the MIP CCM database is not supported in this release, MIPs will not forward LTM on blocked egress ports.
+
+**Performance Monitoring**
+
+The ITU-T Y.1731 Recommendation addresses the need to monitor performance to help enforce customer service level agreements (SLAs). Frame delay (latency) and frame delay variation (jitter) are important performance objectives, especially for those applications (such as voice) that cannot function with a high level of latency or jitter.
+This implementation of Service OAM supports Ethernet frame delay measurement (ETH-DM) and is compliant with Y.1731. The ETH-DM feature allows for the configuration of on-demand OAM to measure frame delay and frame delay variation between endpoints.
+Frame delay measurement is performed between peer MEPs (measurements to MIPs are not done) within the same MA. Although the OmniSwitch implementation of ETH-DM is compliant with ITU-T Y.1731, delay measurement can be performed for both ITU-T Y.1731 and IEEE 802.1ag MEPs.
+Any MEP can initiate or reply to an ETH-DM request, depending on the type of delay measurement requested. There are two types of delay measurements supported: one-way and two-way
+
+One-way ETH-DM
+
+* A MEP sends one-way delay measurement (1DM)) frames to a peer MEP. The sending MEP inserts the transmission time into the 1DM frame at the time the frame is sent.
+* When a MEP receives a 1DM frame, the MEP calculates the one-way delay as the difference between the time at which the frame was received and the transmission time indicated by the frame timestamp (receive time minus transmission time).
+* One-way delay measurement statistics are gathered and stored on the receiving MEP (the MEP that receives a 1DM request).
+* One-way ETH-DM requires clock synchronization between the sending and receiving MEPs. Using NTP for clock synchronization is recommended.
+
+Two-way ETH-DM
+
+* A MEP sends delay measurement message (DMM) frames to a peer MEP to request a two-way ETH-DM. The sending MEP inserts the transmission time into the DMM frame at the time the frame is sent.
+* When a MEP receives a DMM frame, the MEP responds to the DMM with a delay message reply (DMR) frame that contains the following timestamps:
+
+    - Timestamp copied from the DMM frame.
+    - Timestamp indicating when the DMM frame was received.
+    - Timestamp indicating the time at which the receiving MEP transmitted the DMR frame back to the sending MEP.
+
+* When a MEP receives a DMR frame, the MEP compares all the DMR timestamps with the time at which the MEP received the DMR frame to calculate the two-way delay.
+* The two-way delay is the difference between the time the originating MEP sent a DMM request and the time at which the originating MEP received a DMR frame minus the time taken by the responding MEP to process the DMM request.
+* Two-way delay measurement statistics are gathered and stored on the originating MEP (the MEP that initiates a DMM request).
+* This method does not require clock synchronization between the transmitting and receiving MEPs.
+* Two-way ETH-DM is an on-demand OAM performance measurement. To set up continuous two-way delay measurement, see Chapter 40, “Configuring Service Assurance Agent,” for information about how to configure a SAA for continuous two-way frame delay measurement.
+
+**Frame Delay Variation**
+
+The delay variation (jitter) for both one-way and two-way ETH-DM is determined by calculating the difference between the current delay measurement value and the previous delay measurement value. If a previous delay value is not available, which is the case when a DM request is first made, then jitter is not calculated.
+
+**Interoperability with ITU-T Y.1731**
+
+This implementation of Ethernet Service OAM supports both IEEE 802.1ag and ITU-T Y.1731 for connectivity fault management (plus performance monitoring provided by ITU-T Y.1731). Although both standards are supported, the OmniSwitch implementation uses the 802.1ag terminology and hierarchy for Ethernet CFM configuration
+
+.. figure:: /images/itu1731.png
+    :width: 400px
+    :align: center
+    :height: 200px
+    :alt: alternate text
+    :figclass: align-center
+
+
+Service Assurance Agent
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The Service Assurance Agent (SAA) feature is used to send periodic ping or loopback tests to peers over the network. This is done using standard IP ping packets, proprietary MAC pings, and Ethernet OAM tests. It is possible to configure a large number of test sessions on the switch, with each test having the ability to send notification traps and provide a method for determining network performance.
+Each SAA test can specify threshold values for jitter and round-trip-time (RTT). When SAA processes an iteration of a test session, it will compare the results against the following criteria to see if an SNMP trap should be sent. A trap with the session name is sent if:
+
+- At least one packet is lost.
+- Warning: Average RTT/Jitter within 10% of threshold.
+- Critical: Average RTT/Jitter at or above threshold.
+
+When an SAA is created, an owner name is assigned to the agent. This name is based on the application that generated the SAA. For example:
+
+- CLI SAA owner name = “USER”
+- OmniVista owner name = “OV”
+- Shortest Path Bridging owner name = “SPB”
+
+The SAA feature also provides the ability to periodically record the last five iterations of all SAA sessions to an XML file on the local switch. The name of the XML file and the logging time interval are configurable SAA XML parameters.
+
+Configuring SAA
+^^^^^^^^^^^^^^^
+
+1 Create the base SAAs using the saa command. For example:
+
+  .. code-block:: console
+
+      -> saa saa1 description "saa for ip-ping" interval 120 rtt-threshold 20000
+      -> saa saa2 description “saa for mac-ping” interval 500 jitter-threshold 10000
+      -> saa saa3 description "saa for eth-lb" interval 160
+      -> saa saa4 description "saa for eth-dmm" interval 300
+
+2 Configure SAA “saa1” for IP ping using the saa type ip-ping command. For example:
+
+  .. code-block:: console
+
+    -> saa saa1 type ip-ping destination-ip 123.22.45.66 source-ip 123.35.42.125 type-of-service 5 inter-pkt-delay 1500 num-pkts 8 payload-size 1000
+
+3 Configure SAA “saa2” for MAC ping using the saa type mac-ping command. For example:
+
+  .. code-block:: console
+
+    -> saa saa2 type mac-ping destination-macaddress 00:11:11:11:11:11 vlan 10 vlan-priority 3
+
+4 Configure SAA saa3 for Ethoam loopback using the saa type ethoam-loopback command. For example:
+
+  .. code-block:: console
+
+    -> saa saa3 type ethoam-loopback target-endpoint 10 source endpoint 2 domain md1 association ma1 vlan-priority 5 drop-eligible true inter-pkt-delay 500
+
+5 Configure SAA “saa4” for ETH-DMM using saa type ethoam-two-way-delay command. For example:
+
+  .. code-block:: console
+
+    -> saa saa4 type ethoam-two-way-delay target-endpoint 5 source endpoint 1 domain md2 association ma2 vlan-priority 4 inter-pkt-delay 1000
+
+6 Start the SAA using the saa start command.
+
+  .. code-block:: console
+
+      -> saa saa1 start
+      -> saa saa2 start at 2009-10-13,09:00:00.0
+
+7 Stop the SAA using the saa stop command.
+
+  .. code-block:: console
+
+      -> saa saa1 stop
+      -> saa saa2 stop at 2009-10-13,10:00:00.0
+
