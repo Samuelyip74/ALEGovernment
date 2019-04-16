@@ -1,0 +1,667 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Smart City Net &mdash; ALE Government 1.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Municipal Cloud" href="MunicipalCloud.html" />
+    <link rel="prev" title="Smart Nation Solutions" href="SmartNation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ALE Government
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="NetworkForGovernment.html">Network Solutions for Government</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommForGovernment.html">Communication Solutions for Government</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="SmartNation.html">Smart Nation Solutions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Smart City Net</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#technologies">Technologies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#l2-l3-vpn">L2/L3 VPN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpls-vs-spb">MPLS vs SPB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#omniswitch-spb">OmniSwitch SPB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spbm-shortest-path-trees">SPBM Shortest Path Trees</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spb-services">SPB Services</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ip-over-spbm">IP over SPBM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#l3-vpn">L3 VPN</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#high-level-architecture">High level architecture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#topology">Topology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#products">Products</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-spb-in-omniswitch">Configure SPB in OmniSwitch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-spb-service">Create SPB service</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-vlan-translation">Using VLAN Translation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enable-the-service">Enable the Service</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-the-sap-points">Configure the SAP points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vlan-translation-on-access-ports">VLAN Translation on Access Ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuring-layer-2-profiles-for-access-ports">Configuring Layer 2 Profiles for Access Ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#assigning-layer-2-profiles-to-access-ports">Assigning Layer 2 Profiles to Access Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#security">Security</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-plane">Data plane</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-management-plane">Control &amp; Management plane</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interworking-with-other-networks">Interworking with other Networks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpls-to-spb-interconnect">MPLS to SPB interconnect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpon-to-spb-interconnect">GPON to SPB interconnect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#metro-e-to-spb-interconnect">Metro-E to SPB interconnect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wlan-to-spb-interconnect">WLAN to SPB interconnect</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-administration-and-management-oam">Operation, Administration, and Management (OAM)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spb-oam">SPB OAM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ethernet-oam">Ethernet OAM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#link-oam">Link OAM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#service-oam">Service OAM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#service-assurance">Service Assurance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="MunicipalCloud.html">Municipal Cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MunicipalWIFI.html">Municipal WIFI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PublicWIFI.html">Public Wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LBS.html">Location based service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ITS.html">Intelligent Transportation System Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConnectedBUS.html">Connected Bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConnectedBUSShelter.html">Connected Bus Shelter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConnectedAmbulance.html">Connected Ambulance</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ALE Government</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="SmartNation.html">Smart Nation Solutions</a> &raquo;</li>
+        
+      <li>Smart City Net</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/SmartCityNet.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="smart-city-net">
+<h1>Smart City Net<a class="headerlink" href="#smart-city-net" title="Permalink to this headline">¶</a></h1>
+<p>Smart cities rely on a robust, yet flexible network foundation to interconnect sensors, people and businesses with cloud-based applications. A city net is the cornerstone of a smart city since all use cases are reliant on it.</p>
+<p>City net technical requirements</p>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">Table 1  City net technical requirements</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Multi-tenancy</td>
+<td>A “city net” provides services to multiple tenants. L3 VPN services are needed for most government agencies, schools and hospitals. L2 VPN services are needed in specific situations such as DC interconnect. IoT devices of different class need to be isolated in their own L2 or L3 container for security.</td>
+</tr>
+<tr class="row-even"><td>Availability</td>
+<td>Availability is of utmost importance since the city net provides services to multiple agencies and supports multiple use cases. The city net must implement redundancy at all layers to protect from node or link failure and to facilitate in-service maintenance. In the event of a failure, the network must re-converge in under 1 second.</td>
+</tr>
+<tr class="row-odd"><td>Scalability</td>
+<td>The city net architecture must be scalable to support the required number of tenants, containers, devices and users as well as bandwidth and multicast flow and more.</td>
+</tr>
+<tr class="row-even"><td>Simple Operations</td>
+<td>The city net can be comprised of thousands of network nodes and IoT devices. Because of its size, template-driven automatic provisioning of nodes and devices is necessary to reduce deployment cost, time and errors.</td>
+</tr>
+<tr class="row-odd"><td>Security</td>
+<td>Because a smart city net supports mission-critical infrastructure, security is even more critical than traditional enterprise security. A multi-layered approach is required including security hardening of nodes and devices, network admission control (NAC) and role-based access, protection of data integrity and confidentiality as well as quarantine and remediation among others.</td>
+</tr>
+<tr class="row-even"><td>Environmental</td>
+<td>Smart city net nodes will be deployed in locations such as within a road-side cabinet where they will be subject to extreme temperatures, dust, vibration and shock. The network devices must tolerate such harsh conditions.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="technologies">
+<h2>Technologies<a class="headerlink" href="#technologies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="l2-l3-vpn">
+<h3>L2/L3 VPN<a class="headerlink" href="#l2-l3-vpn" title="Permalink to this headline">¶</a></h3>
+<p>The concept of L3 VPNs for government agencies, schools and hospitals is shown in the figure below.
+In this diagram, schools, hospitals and other government agencies are tenants of the city net and each have their own L3 VPN. VPN technology ensures all these different tenants can coexist on the same infrastructure and that tenant data is kept private from other tenants.
+In a L3 VPN, tenants exchange routes with the city net and the city net routes tenant data from site to site over the most optimal route without traffic tromboning back and forth to a central site for routing.
+In addition, tenant data is isolated from other tenants and tenant routes are not advertised to other tenants.</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/l2l3vpn.png"><img alt="alternate text" src="_images/l2l3vpn.png" style="width: 600px; height: 300px;" /></a>
+</div>
+<p>Alcatel-Lucent provide two technologies to build L2/L3 VPN.  The two technologies are MPLS, and SPB.  In this document, we
+will cover SPB (Shortest Path Bridging) to build L2/L3 VPN.</p>
+</div>
+<div class="section" id="mpls-vs-spb">
+<h3>MPLS vs SPB<a class="headerlink" href="#mpls-vs-spb" title="Permalink to this headline">¶</a></h3>
+<p>Even since Layer 3 VPN is implemented in SPB, there has been a lot of debate with the use of SPB as an alternative to MPLS.
+Below are some of the common arguments we shared with our customers.</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/mplsvsspb.png"><img alt="alternate text" src="_images/mplsvsspb.png" style="width: 1600px; height: 180px;" /></a>
+</div>
+</div>
+<div class="section" id="omniswitch-spb">
+<h3>OmniSwitch SPB<a class="headerlink" href="#omniswitch-spb" title="Permalink to this headline">¶</a></h3>
+<p>The OmniSwitch implementation of Shortest Path Bridging (SPB) supports SPB MAC (SPBM) as defined in the IEEE 802.1aq standard.
+SPBM is defined for use in Provider Backbone Bridge (PBB) networks as specified in the IEEE 802.1ah standard.
+SPBM provides a mechanism to automatically define a shortest path tree (SPT) bridging configuration through a Layer 2 Ethernet network. SPBM Ethernet services use this configuration to encapsulate and tunnel data through the PBB network. The following main components of the OmniSwitch implementation of SPBM provide this type of functionality:</p>
+<ul class="simple">
+<li>ISIS-SPB—A version of the Intermediate to Intermediate System (IS-IS) link state protocol that supports SPB TLV extensions. SPBM uses ISIS-SPB to build sets of symmetric shortest path trees (SPTs) between any SPB switch.</li>
+<li>Provider Backbone Bridge (PBB) IEEE 802.1ah— Defines a MAC-in-MAC data encapsulation path for PBB networks that is supported by SPBM.</li>
+<li>Provider Backbone Bridge Network (PBBN)—A network comprised of Backbone Edge Bridges (BEBs) and Backbone Core Bridges (BCB) that is used to interconnect Provider Bridge Networks (PBN) with other networks.</li>
+<li>Backbone Edge Bridge (BEB)—An SPB switch positioned at the edge of the PBB network that learns and encapsulates (adds an 802.1ah backbone header to) customer frames for transport across the backbone network. The BEB interconnects the customer network space with PBB network space.</li>
+<li>Backbone Core Bridge (BCB)—An SPB node that resides inside the PBB network core. The BCB employs the same BVLAN on two or more network ports. This BVLAN does not terminate on the switch itself; traffic ingressing on an SPB network port is switched to other SPB network ports. As a result, the BCB does not have to learn any of the customer MAC addresses. It mainly serves as a transit bridge for the PBB network.</li>
+<li>SPBM Service—An OmniSwitch Service Manager service configured on the BEBs. Each service maps to a service instance identifier (I-SID) which is bound to a backbone VLAN. One backbone VLAN can accommodate multiple I-SIDs.</li>
+<li>Backbone VLAN (BVLAN)—A VLAN that serves as a transport VLAN for the SPBM service instances and to connect SPB bridges together through SPT sets. Unlike standard VLANs, BVLANs do not learn source MAC addresses or flood unknown destination or multicast frames. Instead, BVLANs only forward on the basis of the forwarding database (FDB) as populated by the ISIS-SPB protocol.</li>
+</ul>
+</div>
+<div class="section" id="spbm-shortest-path-trees">
+<h3>SPBM Shortest Path Trees<a class="headerlink" href="#spbm-shortest-path-trees" title="Permalink to this headline">¶</a></h3>
+<p>The shortest path between two points is a straight line. Shortest Path Bridging (SPB) implements frame forwarding on the shortest path between any two bridges in an Ethernet network. The shortest path trees (SPTs) calculated by SPB provide the shortest and most efficient path to and from the intended destination. SPTs are formed along the direct, straight-line links between switches to make up an overall path through the topology that provides a robust, efficient direction for network traffic to travel.
+The SPBM network topology consists of two layers:
+* The backbone infrastructure (control plane) layer. ISIS-SPB builds the backbone layer by defining loop-free, shortest path trees (SPTs) through the backbone network.
+* The services (data plane) layer. The service layer is based on the Provider Backbone Bridging (PBB) framework as defined in the IEEE 802.1ah standard. SPBM supports the 802.1ah MAC-in-MAC method for data encapsulation.</p>
+</div>
+<div class="section" id="spb-services">
+<h3>SPB Services<a class="headerlink" href="#spb-services" title="Permalink to this headline">¶</a></h3>
+<p>The SPBM network topology consists of two layers:</p>
+<ul class="simple">
+<li>The backbone infrastructure (control plane) layer. ISIS-SPB builds the backbone layer by defining loop-free, shortest path trees (SPTs) through the backbone network.</li>
+<li>The services (data plane) layer. The service layer is based on the Provider Backbone Bridging (PBB) framework as defined in the IEEE 802.1ah standard. SPBM supports the 802.1ah MAC-in-MAC method for data encapsulation. SPBM services transport the encapsulated traffic over the ISIS-SPB infrastructure.</li>
+</ul>
+<p>The SPB service layer framework is comprised of the following components:</p>
+<ul class="simple">
+<li>Backbone Edge Bridge (BEB). An OmniSwitch is considered a BEB if the switch is SPB capable and at least one service access point (SAP) and one SPB interface is configured on the switch. The BEB marks the boundary between the customer network and the PBB network (PBBN).</li>
+<li>Backbone Core Bridge (BCB). An OmniSwitch is considered a BCB if the switch is SPB capable and no SAPs are configured but at least one SPB interface is configured on the switch to forward encapsulated SPBM network traffic. Note that the requirement for configuring a BCB is based on whether or not the network topology includes a transit bridge.</li>
+<li>Service Instance Identifier (I-SID). Configured only on a BEB, this component identifies a backbone service instance that will tunnel the encapsulated data traffic through the PBBN between BEBs. The I- SID is bound to a BVLAN ID and a Service Manager SPB service ID when the service is created.</li>
+<li>Access Port. A port or link aggregate configured as an SPB access port. This type of port is configured on the BEBs and defines the point at which traffic from other provider networks or directly from customer networks enters the PBBN. The access port is also associated with a Layer 2 profile that specifies how to process protocol control frames received on the port</li>
+<li>Service Access Point (SAP)—A SAP is a logical service entity (also referred to as a virtual port) that is configured on a BEB to bind an access port to an SPB service ID and specify the type of customer traffic ((untagged, single-tagged, double-tagged, or all) to encapsulate and tunnel through the PBBN.</li>
+<li>SPB Interface (Network Port)—A port or link aggregate configured as an SPB interface that resides on either a BEB or a BCB and connects to the backbone network. Network ports carry customer traffic encapsulated in 802.1ah frames and are associated with all BVLANs on the switch. Customer traffic ingressing on a network port is switched to another network port (on BCBs) or to an access port (on BEBs).</li>
+</ul>
+<p>Once the ISIS-SPB infrastructure and the SPB service-based architecture is defined, the following service components are dynamically created by the OmniSwitch. No user-configuration is required.</p>
+<ul class="simple">
+<li>Service Distribution Point (SDP)—A SDP provides a logical point at which customer traffic is directed from one BEB to another BEB. SDPs are used to set up distributed services, which consist of at least one SAP on a local node, one SAP on a remote node, and an SDP binding the service on both nodes.</li>
+<li>SDP Bind—An SDP binding represents the binding of an SPB service instance to an SDP. The SDP then distributes the service connectivity to other BEBs through the ISIS-SPB shortest path trees.</li>
+</ul>
+</div>
+<div class="section" id="ip-over-spbm">
+<h3>IP over SPBM<a class="headerlink" href="#ip-over-spbm" title="Permalink to this headline">¶</a></h3>
+<p>The OmniSwitch implementation of SPBM provides L2 VPN capability that bridges L2 customer LAN segments. Customer edge (CE) devices form peers and exchange routing information, as well as perform the necessary IP forwarding. Then the SPBM BEBs bridge the already routed IP traffic across the SPBM backbone.
+In addition to L2 VPN, the OmniSwitch also provides an IP over SPBM capability that consolidates the routing functionality of CE devices into the BEB devices. The Virtual Routing and Forwarding (VRF) instances on different BEBs are tied together via backbone I-SIDs across the same SPBM backbone that is used to support Layer 2 VPNs.
+The OmniSwitch IP over SPBM solution supports two methods for combining L3 routing and L2 SPBM in the same switch: VPN-Lite and L3 VPN.</p>
+</div>
+<div class="section" id="l3-vpn">
+<h3>L3 VPN<a class="headerlink" href="#l3-vpn" title="Permalink to this headline">¶</a></h3>
+<p>When the L3 VPN method is implemented, the OmniSwitch acts as an access or edge router to multiple VRFs and connects these VRFs across an SPBM PBB network. Each VPN is identified by a local VRF instance on each BEB and globally in the backbone by an I-SID in the PBB header. ISIS-SPB will import and export routes from the local routing protocols running inside their respective VRFs. In essence, ISIS- SPB is creating tunnels between BEBs through which routed frames are sent to reach their target networks.
+The OmniSwitch L3 VPN solution is based on the IETF drafts IP/IPVPN services with IEEE 802.1aq SPB(B) networks and uses IS-IS TLVs to exchange routes between the BEBs that host the same VPN services. This approach also gives an administrator the ability to build VPNs and extend them over an SPBM core.</p>
+</div>
+</div>
+<div class="section" id="high-level-architecture">
+<h2>High level architecture<a class="headerlink" href="#high-level-architecture" title="Permalink to this headline">¶</a></h2>
+<p>Below is a figure that shown the high level architecture of a smart city net.
+At the core of the city net is P(MPLS) or BCB(SPB) routers, offering L2/L3 VPNs to the various agencies.
+The L2/L3 VPN services are extended to the edge via various access technologies such as Metro-E, GPoN, and SPB.</p>
+<div class="section" id="topology">
+<h3>Topology<a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h3>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/hld.png"><img alt="alternate text" src="_images/hld.png" style="width: 800px; height: 300px;" /></a>
+</div>
+<p>Below are the products used for building the Smart City Net.</p>
+</div>
+<div class="section" id="products">
+<h3>Products<a class="headerlink" href="#products" title="Permalink to this headline">¶</a></h3>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/solutions.png"><img alt="alternate text" src="_images/solutions.png" style="width: 800px; height: 400px;" /></a>
+</div>
+</div>
+</div>
+<div class="section" id="configure-spb-in-omniswitch">
+<h2>Configure SPB in OmniSwitch<a class="headerlink" href="#configure-spb-in-omniswitch" title="Permalink to this headline">¶</a></h2>
+<p>Configure the SPBM Backbone (ISIS-SPB)</p>
+<ul class="simple">
+<li>Create a BVLAN. The BVLAN provides the foundation of the SPBM infrastructure. A BVLAN is associated with an equal cost tree (ECT) algorithm ID and an SPB service instance ID that is used to carry customer traffic through the backbone network.</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; spb bvlan 4001 name spb-bvlan-4001</span>
+<span class="go">-&gt; spb bvlan 4001 name spb-bvlan-4002</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Configuring the Control BVLAN. One of the BVLANs configured on each switch serves as the control BVLAN for the ISIS-SPB instance. The control BVLAN exchanges ISIS-SPB control packets with neighboring SPB switches on behalf of all BVLANs configured on the local switch. The control packets are tagged with the control BVLAN ID. To designate a BVLAN as the control BVLAN, use the spb isis control-bvlan command. For example:</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; spb isis control-bvlan 4002</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Configuring an IP Interface on the Control BVLAN. To configure an IP interface on the Control BVLAN to support in-band management access in the SPBM domain, use the ip interface command.</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; ip interface &quot;spb-mgmt-int&quot; address 10.1.1.1/24 vlan 4002</span>
+</pre></div>
+</div>
+<p>Only one Control BVLAN can be configured on a switch, and only IPv4 interface is supported. ISIS-SPB is the only protocol supported in the IP BVLAN domain for exchanging or advertising IP routing information. No other routing protocol (including VRRP) is supported.</p>
+<ul class="simple">
+<li>Verifying the BVLAN Configuration. To view the BVLAN configuration for the switch, use the show spb isis bvlans command. For example:</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; show spb isis bvlans</span>
+<span class="go">-&gt; show vlan</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Configure SPB interfaces. An SPB interface is associated with each BVLAN that is configured on the switch. At the ISIS-SPB level, this type of interface sends and receives ISIS Hello packets and link state PDU (LSP) to discover adjacent SPB switches and calculate the shortest path trees through the SPBM network topology. At the services level, the SPB interfaces serve as network ports that are used to carry encapsulated customer traffic through the network</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; spb isis interface port 1/10         or</span>
+<span class="go">-&gt; spb isis interface linkagg 5</span>
+<span class="go">-&gt; spb isis interface linkagg 5 hello-interval 20 hello-multiplier 5 metric 200</span>
+<span class="go">-&gt; show spb isis interface</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Configure global ISIS-SPB parameters. In addition to enabling/disabling the ISIS-SPB instance for the switch, global configuration includes settings such as a system name for the switch, global bridge parameters, and various wait time intervals. When ISIS-SPB is enabled for the switch, default settings for these global bridge parameters and wait time intervals are active. It is only necessary to change these values if the default settings are not sufficient.</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; system name BEB-1</span>
+<span class="go">-&gt; spb isis bridge-priority 25590</span>
+<span class="go">-&gt; spb isis area-address 1.1.1</span>
+<span class="go">-&gt; spb isis source-id 07-0b-d3</span>
+<span class="go">-&gt; spb isis source-id auto</span>
+<span class="go">-&gt; spb isis control-address alll2</span>
+<span class="go">-&gt; spb isis spf-wait max-wait 2500 initial-wait 1000 second-wait 1500</span>
+<span class="go">-&gt; spb isis lsp-wait max-wait 2000 initial-wait 1000 second-wait 1500</span>
+<span class="go">-&gt; spb isis overload</span>
+<span class="go">-&gt; spb isis graceful-restart</span>
+<span class="go">-&gt; spb isis admin-state enable</span>
+</pre></div>
+</div>
+<div class="section" id="create-spb-service">
+<h3>Create SPB service<a class="headerlink" href="#create-spb-service" title="Permalink to this headline">¶</a></h3>
+<p>An SPB service is identified by a service ID number, which represents an association between a backbone service instance identifier (I-SID) and an existing BVLAN. Basically, creating an SPB service binds the backbone I-SID to a BVLAN ID. All traffic mapped to the specific I-SID is then encapsulated and forwarded on the associated BVLAN to the intended destination.
+The service spb command is used to create an SPB service. For example, the following command creates SPB service 1 and binds I-SID 100 to BVLAN 4001:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service 1 spb isid 500 bvlan 4001 admin-state enable</span>
+</pre></div>
+</div>
+<p>The BVLAN ID specified with the service spb command must already exist in the switch configuration. However, the I-SID number specified creates a new I-SID that is bound to the BVLAN for this service.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When adding another BVLAN to an existing SPBM topology instance, create the new BVLAN and its associated ECT ID on every switch first, then configure the SPB service association for the BVLAN. Creating SPB services before the BVLAN configuration is complete on all switches can cause problems with forming adjacencies or may even cause an SPB switch to drop existing adjacencies.</p>
+</div>
+</div>
+<div class="section" id="using-vlan-translation">
+<h3>Using VLAN Translation<a class="headerlink" href="#using-vlan-translation" title="Permalink to this headline">¶</a></h3>
+<p>VLAN translation refers to the egress translation of VLAN tags on service access points (SAPs). When enabled for a service, the VLAN tags for outgoing customer frames on SAPs associated with that service are processed according to the local SAP configuration (the SAP on which the frames will egress) and not according to the configuration of the SAP on which the frames were received.</p>
+<ul class="simple">
+<li>If the local SAP is configured for untagged traffic (slot/port:0), the egress traffic is always sent out as untagged.</li>
+<li>If the local SAP is configured for 802.1q-tagged traffic (slot/port:ctag), the egress traffic is single- tagged with the tag value specified by the ctag (customer VLAN tag) value.</li>
+<li>If the local SAP is configured for double-tagged traffic (slot/port:outer_tag.: inner_tag), the egress traffic is double-tagged with the tag values specified by the outer_tag and inner_tag values.</li>
+</ul>
+<p>When VLAN translation is disabled, frames simply egress without any modification of the VLAN tags. In other words, the frames are transparently bridged without tag modification.
+The following table shows the required translation (tag is added or replaced) that takes place when the egress SAP configuration is applied to the possible frame types (untagged, tagged, double-tagged). Note that in this table the terms “ITAG” and “OTAG” refer to inner tag and outer tag, respectively.</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/saptags.png"><img alt="alternate text" src="_images/saptags.png" style="width: 800px; height: 300px;" /></a>
+</div>
+<p>Enabling VLAN translation is required at two different levels: first at the access port level and then at the service level. This activates VLAN translation for all of the SAPs on an access port that belong to the same service.
+To enable translation at the service level, use the service vlan-xlation command. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service 1 vlan-xlation enable</span>
+</pre></div>
+</div>
+<p>To enable VLAN translation for all services, use the all parameter with the same command. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service all vlan-xlation enable</span>
+</pre></div>
+</div>
+<p>To enable VLAN translation at the access port level, use the service access vlan-xlation command. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service access port 1/11 vlan-xlation enable</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="enable-the-service">
+<h3>Enable the Service<a class="headerlink" href="#enable-the-service" title="Permalink to this headline">¶</a></h3>
+<p>By default, the SPB service is disabled when the service is created. Once the service is created and any optional service parameters are configured, use the service admin-state command with the enable option to enable the service. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service 1 admin-state enable</span>
+<span class="go">-&gt; show service spb</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configure-the-sap-points">
+<h3>Configure the SAP points<a class="headerlink" href="#configure-the-sap-points" title="Permalink to this headline">¶</a></h3>
+<p>A SAP identifies the location where customer traffic enters the Provider Backbone Bridge Network (PBBN) edge, the type of customer traffic to service, parameters to apply to the traffic, and the service that will process the traffic for tunneling through the provider network.
+Configuring a SAP requires several steps. These steps are outlined here and further described throughout this section:</p>
+<ul class="simple">
+<li>Configure customer-facing ports or link aggregates as service access ports.</li>
+<li>Configure Layer 2 profiles to determine how control packets are processed on access ports.</li>
+<li>Create a SAP by associating a SAP ID with an SPB service ID. A SAP ID is comprised of an access port and an encapsulation value, which is used to identify the type of customer traffic (untagged, single-tagged, or double-tagged) to map to the associated service.</li>
+</ul>
+<p>To configure a port or link aggregate as an access port, use the service access command. For example, the following command configures port 1/2 and link aggregate 5 as access ports:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service access port 1/2</span>
+<span class="go">-&gt; service access linkagg 5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vlan-translation-on-access-ports">
+<h3>VLAN Translation on Access Ports<a class="headerlink" href="#vlan-translation-on-access-ports" title="Permalink to this headline">¶</a></h3>
+<p>VLAN translation refers to the egress translation of VLAN tags on service access points (SAPs). For more information about how VLAN translation is applied, see “Using VLAN Translation” on page 7-40.
+By default, VLAN translation is disabled on access ports. Enabling VLAN translation on an access port implicitly enables translation for all SAPs associated with that port. However, translation must also be enabled for the services associated with these SAPs. This ensures that all SAPs associated with a service will apply VLAN translation.
+To enable VLAN translation on an access port, use the service access vlan-xlation command with the enable option. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service access port 1/3 vlan-xlation enable</span>
+<span class="go">-&gt; service access linkagg 10 vlan-xlation enable</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-layer-2-profiles-for-access-ports">
+<h3>Configuring Layer 2 Profiles for Access Ports<a class="headerlink" href="#configuring-layer-2-profiles-for-access-ports" title="Permalink to this headline">¶</a></h3>
+<p>A Layer 2 profile determines how control frames ingressing on an access port are processed. When a port is configured as an access port, a default Layer 2 profile (def-access-profile) is applied to the port with the following default values for processing control frames:</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/l2profile.png"><img alt="alternate text" src="_images/l2profile.png" style="width: 300px; height: 200px;" /></a>
+</div>
+<p>If the default profile values are not sufficient, use the service l2profile command with the tunnel, drop, and peer options to create a new profile. For example, the following command creates a profile named “DropL2”:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service l2profile DropL2 stp drop gvrp drop 802.1ab drop</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="assigning-layer-2-profiles-to-access-ports">
+<h3>Assigning Layer 2 Profiles to Access Ports<a class="headerlink" href="#assigning-layer-2-profiles-to-access-ports" title="Permalink to this headline">¶</a></h3>
+<p>After a Layer 2 profile is created, it is then necessary to assign the profile to an access port or link aggregate. When this is done, the current profile associated with the port is replaced with the new profile.
+The service access l2profile command is used to assign a new profile to an access port. For example, the following command assigns the “DropL2” profile to access port 1/4 and link aggregate 5:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service access port 1/4 l2profile DropL2</span>
+<span class="go">-&gt; service access linkagg 5 l2profile DropL2</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To change the profile associated with the access port back to the default profile (def-access-profile), use the default option with the service access l2profile command. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">-&gt; service port 1/4 l2profile default</span>
+<span class="go">-&gt; service access linkagg 5 l2profile default</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>OmniSwitch implements a Multi-layered Security approach to secure the data, control and management plane of the switch.
+The following sections covered the various security implementations:</p>
+<div class="section" id="data-plane">
+<h3>Data plane<a class="headerlink" href="#data-plane" title="Permalink to this headline">¶</a></h3>
+<p>The figure below shown the various features used to protect the data plane of the switch.
+At the edge, access guardian feature in OmniSwitch provide network access control functionality
+to authentication the user/device based on any of the following methods:</p>
+<ul class="simple">
+<li>MAC authentication</li>
+<li>Captive Portal, or</li>
+<li>802.1x authentication.</li>
+</ul>
+<p>OmniSwitch supports Radius, Tacacs+, LDAP and RSA for authentication.</p>
+<p>If access guardian is not enabled, administrator can implement rogue device detection capability
+to protect the switch from unauthorized access.</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/dataplane.png"><img alt="alternate text" src="_images/dataplane.png" style="width: 800px; height: 300px;" /></a>
+</div>
+<p>After a device passed the network access control phrase, the switch perform device fingerprinting and attempt to discover
+the Device Type/ Vendor Type/ Operating System/ and OS version via different means such as mac-address, dhcp, http agent etc.
+These information collected formed the context of the user/device which in turns is used to derive the appropriate network policy.
+The switch subsequently classify the user/device into the relevant service/vlan based on:</p>
+<ul class="simple">
+<li>Mac-address (static associated)</li>
+<li>IP address (static associated)</li>
+<li>Contextual information (dynamic derived associated)</li>
+</ul>
+<p>Before the user/device is given full access, the switch can limit the access based on the posture of the device (PC in particular).
+An OnGuard agent can be pre-installed in the PC to check the PC for compliance; and only allow the PC full access if the device passed
+all the compliance checks.  Posture check implementation is optional.</p>
+<p>The OnGuard agent can check for:</p>
+<ul class="simple">
+<li>Installed applications</li>
+<li>Anti-Virus pattern file agencies</li>
+<li>Host Firewall status</li>
+<li>Network connections</li>
+<li>Patch Management</li>
+<li>Services</li>
+<li>Virtual Machine</li>
+<li>Processes</li>
+<li>Windows Hotfixes</li>
+<li>USB / File checks</li>
+</ul>
+<p>The OnGuard agent continue to check for compliance throughout the entire session.  Should the device failed the checklist or policy
+at anythime, the policy manager will revoke the network access.  This is achieved via Radius COA or OnGuard agent-bounced.</p>
+<p>Besides the OnGuard agent, the switch also perform various security functions to protect the network.  These includes</p>
+<ul class="simple">
+<li>Flood control - Limit broadcast, multicase, and unknown-unicast</li>
+<li>Microsegmentation - Port / Device level acl</li>
+<li>Quarantine Manager - quarantine device that trigger security events on IDS/IPS/Firewall</li>
+<li>MACSec - Layer 2 point-to-point encryption between two switches</li>
+<li>User behaviour (Wireless only) - reports all the sessions of the users for further processing</li>
+<li>App Visibility (req. DPI) - provide App visibility of the network through OmniVista 2500</li>
+</ul>
+</div>
+<div class="section" id="control-management-plane">
+<h3>Control &amp; Management plane<a class="headerlink" href="#control-management-plane" title="Permalink to this headline">¶</a></h3>
+<p>OmniSwitch implements multiple features to ensure the control and management plane is protected from external threats.</p>
+<p>Alcatel-Lucent Enterprise and LGS Innovations have combined to provide the first network equipment to be hardened by an independent group.
+CodeGuardian promotes security and assurance at the network device level using independent verification and validation of source code, software diversification to prevent exploitation and secure delivery of software to customers.
+CodeGuardian employs multiple techniques to identify vulnerabilities such as software architecture reviews, source code analysis (using both manual techniques and automated tools), vulnerability scanning tools and techniques, as well as analysis of known vulnerabilities in third party code.</p>
+<div class="align-center figure">
+<a class="reference internal image-reference" href="_images/controlplanesecurity.png"><img alt="alternate text" src="_images/controlplanesecurity.png" style="width: 800px; height: 300px;" /></a>
+</div>
+<p>OmniSwitch provide secure access to network administrator via SSH/ HTTPS / SFTP and SNMPv3.  All access can be protected by password policy and
+the idetntify can be challenged against a AAA infrastructure.   In addition, the OmniSwitch AOS gives administrator the flexibile to bind
+or unbind the management services to the respective IP interfaces.  Certainly, the AOS allow trusted host to access the switch management plane.</p>
+<p>Besides controlling management access, OmniSwitch AOS also guard the switch against DDoS attacks.  The built-in DDoS filtering
+capability protects the CPU against attacks such as ICMP Ping of death, Land attach, ARP Flood attach, Invalid IP attack etc.</p>
+<p>Control plane protection is also one of the crucial feature of OmniSwitch AOS.
+OmniSwitch AOS implements standard-based protocol authentication to guard against learning or sharing routing information
+with unauthorized devices.  In addition, OmniSwitch AOS also include the key-chain management module that further enhance the
+secure keys used in device authentication.</p>
+<p>The keychain module is a centralized key management mechanism in AOS. Any module using key management service ensures enhanced security with regular rotation of the keys. Each keychain defines set of keys with start time and end time.
+To configure a key chain, an administrator defines a series of keys, and the router software rotates through them. Each key also has an associated time interval, or ‘lifetime’ for which it will be activated. The authentication code included in each key is called the key string.
+When a user application (like OSPF, ISIS) receives a packet, it has to be authenticated as per the authentication type, key, and message digest. When a keychain is associated with a user application, hello packets are authenticated using key provided by the keychain module.</p>
+<p>The authentication is passed when following conditions are satisfied. Else, the adjacency is not formed and hello packet is discarded.</p>
+<ul class="simple">
+<li>Current active key defined in keychain and key in the packet are same.</li>
+<li>Authentication type of the current key in the keychain and the authentication type mentioned in the packet are same.</li>
+<li>Message digest calculated by the keychain manager based on the active key and message digest carried in the packet are same.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="interworking-with-other-networks">
+<h2>Interworking with other Networks<a class="headerlink" href="#interworking-with-other-networks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mpls-to-spb-interconnect">
+<h3>MPLS to SPB interconnect<a class="headerlink" href="#mpls-to-spb-interconnect" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="gpon-to-spb-interconnect">
+<h3>GPON to SPB interconnect<a class="headerlink" href="#gpon-to-spb-interconnect" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="metro-e-to-spb-interconnect">
+<h3>Metro-E to SPB interconnect<a class="headerlink" href="#metro-e-to-spb-interconnect" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="wlan-to-spb-interconnect">
+<h3>WLAN to SPB interconnect<a class="headerlink" href="#wlan-to-spb-interconnect" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="operation-administration-and-management-oam">
+<h2>Operation, Administration, and Management (OAM)<a class="headerlink" href="#operation-administration-and-management-oam" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spb-oam">
+<h3>SPB OAM<a class="headerlink" href="#spb-oam" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="ethernet-oam">
+<h3>Ethernet OAM<a class="headerlink" href="#ethernet-oam" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="link-oam">
+<h3>Link OAM<a class="headerlink" href="#link-oam" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="service-oam">
+<h3>Service OAM<a class="headerlink" href="#service-oam" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="service-assurance">
+<h3>Service Assurance<a class="headerlink" href="#service-assurance" title="Permalink to this headline">¶</a></h3>
+<p>For solution guide click here <a class="reference download internal" download="" href="_downloads/322850f3d7dbddacbb3e91bb781930d5/smartcities.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Smart</span> <span class="pre">City</span> <span class="pre">Solution</span> <span class="pre">Guide</span></code></a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="MunicipalCloud.html" class="btn btn-neutral float-right" title="Municipal Cloud" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="SmartNation.html" class="btn btn-neutral float-left" title="Smart Nation Solutions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alcatel-Lucent Enterprise
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
